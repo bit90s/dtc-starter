@@ -17,6 +17,11 @@ module.exports = defineConfig({
       sslmode: 'disable',
     },
   },
+  modules: [
+    {
+      resolve: './src/modules/brand',
+    },
+  ],
   admin: {
     vite: (config) => {
       return {
