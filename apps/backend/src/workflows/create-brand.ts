@@ -1,6 +1,20 @@
+import { Modules } from '@medusajs/framework/utils';
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from '@medusajs/framework/workflows-sdk';
 import { BRAND_MODULE } from '../modules/brand';
 import BrandModuleService from '../modules/brand/service';
+
+type Brand = { id: string; name: string };
+
+const notifyBrandCreatedStep = createStep('notify-brand-created-step', async (brand: Brand, { container }) => {
+  const notification = container.resolve(Modules.NOTIFICATION);
+  await notification.createNotifications({
+    to: 'admin@example.com',
+    channel: 'console',
+    template: 'brand-created',
+    data: { name: brand.name, id: brand.id },
+  });
+  return new StepResponse();
+});
 
 export type CreateBrandInput = {
   name: string;
@@ -42,10 +56,7 @@ export const createBrandWorkflow = createWorkflow('create-brand', (input: Create
 
   const brand = createBrandStep(input);
 
-  // HERE (option C) — a step that runs AFTER the brand exists and gets full rollback.
-  // Examples: link the brand to a product, create a default category, push to Algolia,
-  // send a Slack notification. Each step you add here gets its own compensation.
-  // linkBrandToDefaultCategoryStep({ brand_id: brand.id })
+  notifyBrandCreatedStep(brand);
 
   return new WorkflowResponse(brand);
 });

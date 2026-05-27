@@ -21,6 +21,28 @@ module.exports = defineConfig({
     {
       resolve: './src/modules/brand',
     },
+    {
+      resolve: '@medusajs/medusa/notification',
+      options: {
+        providers: [
+          {
+            resolve: '@medusajs/medusa/notification-local',
+            id: 'local',
+            options: {
+              channels: ['email', 'log'],
+            },
+          },
+          {
+            resolve: './src/modules/notification-console',
+            id: 'console',
+            options: {
+              channels: ['console'],
+              prefix: '🚀',
+            },
+          },
+        ],
+      },
+    },
   ],
   admin: {
     vite: (config) => {
