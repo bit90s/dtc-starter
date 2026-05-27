@@ -1,12 +1,12 @@
-"use server"
+'use server';
 
-import { sdk } from "@lib/config"
-import { getCacheOptions } from "./cookies"
+import { sdk } from '@lib/config';
+import { getCacheOptions } from './cookies';
 
 export type Locale = {
-  code: string
-  name: string
-}
+  code: string;
+  name: string;
+};
 
 /**
  * Fetches available locales from the backend.
@@ -14,15 +14,15 @@ export type Locale = {
  */
 export const listLocales = async (): Promise<Locale[] | null> => {
   const next = {
-    ...(await getCacheOptions("locales")),
-  }
+    ...(await getCacheOptions('locales')),
+  };
 
   return sdk.client
     .fetch<{ locales: Locale[] }>(`/store/locales`, {
-      method: "GET",
+      method: 'GET',
       next,
-      cache: "force-cache",
+      cache: 'force-cache',
     })
     .then(({ locales }) => locales)
-    .catch(() => null)
-}
+    .catch(() => null);
+};

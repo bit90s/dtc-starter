@@ -1,59 +1,57 @@
-"use server"
+'use server';
 
-import { sdk } from "@lib/config"
-import { HttpTypes } from "@medusajs/types"
-import { getCacheOptions } from "./cookies"
+import { sdk } from '@lib/config';
+import { HttpTypes } from '@medusajs/types';
+import { getCacheOptions } from './cookies';
 
 export const listRegions = async () => {
   const next = {
-    ...(await getCacheOptions("regions")),
-  }
+    ...(await getCacheOptions('regions')),
+  };
 
   return await sdk.client
     .fetch<{ regions: HttpTypes.StoreRegion[] }>(`/store/regions`, {
-      method: "GET",
+      method: 'GET',
       next,
-      cache: "force-cache",
+      cache: 'force-cache',
     })
-    .then(({ regions }) => regions)
-}
+    .then(({ regions }) => regions);
+};
 
 export const retrieveRegion = async (id: string) => {
   const next = {
-    ...(await getCacheOptions(["regions", id].join("-"))),
-  }
+    ...(await getCacheOptions(['regions', id].join('-'))),
+  };
 
   return await sdk.client
     .fetch<{ region: HttpTypes.StoreRegion }>(`/store/regions/${id}`, {
-      method: "GET",
+      method: 'GET',
       next,
-      cache: "force-cache",
+      cache: 'force-cache',
     })
-    .then(({ region }) => region)
-}
+    .then(({ region }) => region);
+};
 
-const regionMap = new Map<string, HttpTypes.StoreRegion>()
+const regionMap = new Map<string, HttpTypes.StoreRegion>();
 
 export const getRegion = async (countryCode: string) => {
   if (regionMap.has(countryCode)) {
-    return regionMap.get(countryCode)
+    return regionMap.get(countryCode);
   }
 
-  const regions = await listRegions()
+  const regions = await listRegions();
 
   if (!regions) {
-    return null
+    return null;
   }
 
   regions.forEach((region) => {
     region.countries?.forEach((c) => {
-      regionMap.set(c?.iso_2 ?? "", region)
-    })
-  })
+      regionMap.set(c?.iso_2 ?? '', region);
+    });
+  });
 
-  const region = countryCode
-    ? regionMap.get(countryCode)
-    : regionMap.get("us")
+  const region = countryCode ? regionMap.get(countryCode) : regionMap.get('us');
 
-  return region
-}
+  return region;
+};
