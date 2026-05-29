@@ -1,5 +1,6 @@
 import { Modules } from '@medusajs/framework/utils';
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from '@medusajs/framework/workflows-sdk';
+import { emitEventStep } from '@medusajs/medusa/core-flows';
 import { BRAND_MODULE } from '../modules/brand';
 import BrandModuleService from '../modules/brand/service';
 
@@ -57,6 +58,8 @@ export const createBrandWorkflow = createWorkflow('create-brand', (input: Create
   const brand = createBrandStep(input);
 
   notifyBrandCreatedStep(brand);
+
+  emitEventStep({ eventName: 'brand.created', data: { id: brand.id } });
 
   return new WorkflowResponse(brand);
 });
